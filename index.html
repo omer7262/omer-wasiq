@@ -81,6 +81,10 @@ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 /* skill tag */
 .stag{transition:border-color .18s}
 
+/* trace light */
+.trace-spin{animation:trace-spin 4s linear infinite}
+@keyframes trace-spin{100%{transform:translate(-50%,-50%) rotate(360deg)}}
+
 [x-cloak]{display:none!important}
 </style>
 </head>
@@ -113,7 +117,7 @@ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
         <svg x-show="dark"  class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
       </button>
       <!-- hire me -->
-      <a href="#contact" class="hidden md:inline-flex items-center gap-2 shimmer bg-accent text-white text-sm font-medium px-5 py-2 rounded-full hover:bg-accent-light transition-colors">
+      <a href="#contact" class="hidden md:inline-flex items-center gap-2 shimmer bg-accent text-white text-sm font-medium px-5 py-2 rounded-full hover:bg-accent-light hover:scale-105 hover:shadow-lg hover:shadow-accent/40 transition-all duration-300">
         Hire me <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>
       <!-- hamburger -->
@@ -163,15 +167,15 @@ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
           <strong class="font-medium text-zinc-700 dark:text-zinc-300">Senior Regulatory Operations Specialist</strong> with 8+ years of experience in Veeva Vault PromoMats, eCTD publishing, and promotional compliance for global pharma brands.
         </p>
         <div class="reveal d3 flex flex-wrap gap-4">
-          <a href="#work" class="shimmer inline-flex items-center gap-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium px-7 py-3.5 rounded-full hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors text-sm">
+          <a href="#work" class="shimmer inline-flex items-center gap-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium px-7 py-3.5 rounded-full hover:bg-zinc-700 dark:hover:bg-zinc-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-500/20 dark:hover:shadow-white/20 transition-all duration-300 text-sm group">
             View my work
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </a>
-          <a href="assets/Docs/Omer Wasiq Reg Ops CV.pdf" target="_blank" class="shimmer inline-flex items-center gap-2 bg-accent text-white font-medium px-7 py-3.5 rounded-full hover:bg-accent-light transition-colors text-sm">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <a href="assets/Docs/Omer Wasiq Reg Ops CV.pdf" target="_blank" class="shimmer inline-flex items-center gap-2 bg-accent text-white font-medium px-7 py-3.5 rounded-full hover:bg-accent-light hover:-translate-y-1 hover:shadow-xl hover:shadow-accent/40 transition-all duration-300 text-sm group">
+            <svg class="w-4 h-4 transition-transform group-hover:-translate-y-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             Download CV
           </a>
-          <a href="#contact" class="inline-flex items-center gap-2 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium px-7 py-3.5 rounded-full hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors text-sm">Get in touch</a>
+          <a href="#contact" class="inline-flex items-center gap-2 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium px-7 py-3.5 rounded-full hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:-translate-y-1 hover:shadow-lg hover:border-zinc-400 dark:hover:border-zinc-600 transition-all duration-300 text-sm">Get in touch</a>
         </div>
         <div class="reveal d4 flex gap-8 mt-14 pt-8 border-t border-zinc-100 dark:border-zinc-900">
           <div><p class="font-display font-bold text-3xl text-zinc-900 dark:text-white">8+</p><p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Years experience</p></div>
@@ -181,11 +185,17 @@ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
       </div>
 
       <div class="reveal d2 flex justify-center md:justify-end">
-        <div class="relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96">
-          <div class="pf w-full h-full rounded-3xl">
+        <div class="relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 group">
+          <div class="absolute -inset-[3px] rounded-[1.6rem] overflow-hidden pointer-events-none z-0">
+            <div class="absolute top-1/2 left-1/2 w-[150%] h-[150%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,transparent_70%,#FF6B2B_100%)] trace-spin"></div>
+          </div>
+          <div class="absolute -inset-[3px] rounded-[1.6rem] overflow-hidden pointer-events-none z-0 blur-md opacity-70 group-hover:opacity-100 transition-opacity duration-500">
+            <div class="absolute top-1/2 left-1/2 w-[150%] h-[150%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,transparent_70%,#FF6B2B_100%)] trace-spin"></div>
+          </div>
+          <div class="pf relative w-full h-full rounded-3xl z-10 border-[3px] border-white dark:border-zinc-900 shadow-xl transition-all duration-500 group-hover:scale-[1.02]">
             <img src="./me.jpeg" alt="Omer Wasiq — Freelance UI/UX Designer" loading="eager">
           </div>
-          <div class="absolute -bottom-4 -left-4 bg-accent text-white font-display font-bold text-sm px-4 py-2.5 rounded-2xl shadow-lg">Open to projects</div>
+          <div class="absolute -bottom-4 -left-4 bg-accent text-white font-display font-bold text-sm px-5 py-2.5 rounded-2xl shadow-lg z-20 transition-all duration-300 hover:scale-110 hover:-translate-y-1 cursor-pointer">Open to projects</div>
         </div>
       </div>
 

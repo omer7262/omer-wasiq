@@ -24,10 +24,12 @@ tailwind.config = {
 html,body{font-family:'DM Sans',sans-serif; background-color: #f4f4f5; color: #18181b;}
 h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif}
 @media print {
-  body { background-color: white !important; }
+  @page { margin: 0.5in; }
+  body { background-color: white !important; margin: 0; padding: 0; }
   .no-print { display: none !important; }
   .page-break { page-break-before: always; }
-  .exp-block { break-inside: avoid; page-break-inside: avoid; }
+  .exp-block { page-break-inside: auto; break-inside: auto; }
+  .max-w-4xl { box-shadow: none !important; margin: 0 !important; padding: 0 !important; max-width: 100% !important; }
 }
 </style>
 </head>
