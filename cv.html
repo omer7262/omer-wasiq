@@ -27,6 +27,7 @@ h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif}
   body { background-color: white !important; }
   .no-print { display: none !important; }
   .page-break { page-break-before: always; }
+  .exp-block { break-inside: avoid; page-break-inside: avoid; }
 }
 </style>
 </head>
@@ -87,7 +88,7 @@ h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif}
     <h3 class="font-display font-bold text-xl uppercase tracking-widest text-zinc-900 mb-6 border-b border-zinc-200 pb-2">Professional Experience</h3>
     
     <div class="space-y-8">
-      <div>
+      <div class="exp-block">
         <div class="flex justify-between items-baseline mb-1">
           <h4 class="font-display font-bold text-lg text-zinc-900">Area 23 HC, New York</h4>
           <span class="text-sm font-medium text-accent">Sep 2025 – Present</span>
@@ -109,7 +110,7 @@ h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif}
 
       <div class="page-break"></div>
 
-      <div>
+      <div class="exp-block">
         <div class="flex justify-between items-baseline mb-1">
           <h4 class="font-display font-bold text-lg text-zinc-900">McCann Health, London</h4>
           <span class="text-sm font-medium text-accent">Jun 2024 – Dec 2025</span>
@@ -129,7 +130,7 @@ h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif}
         </ul>
       </div>
 
-      <div>
+      <div class="exp-block">
         <div class="flex justify-between items-baseline mb-1">
           <h4 class="font-display font-bold text-lg text-zinc-900">Novartis Healthcare Private Limited | Hyderabad, India</h4>
           <span class="text-sm font-medium text-accent">Nov 2023 – Aug 2024</span>
@@ -148,7 +149,7 @@ h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif}
 
       <div class="page-break"></div>
 
-      <div>
+      <div class="exp-block">
         <div class="flex justify-between items-baseline mb-1">
           <h4 class="font-display font-bold text-lg text-zinc-900">Fishawack Communications Ltd, London, UK (Avalere Health)</h4>
           <span class="text-sm font-medium text-accent">Sep 2021 – Apr 2023</span>
@@ -167,7 +168,7 @@ h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif}
         </ul>
       </div>
 
-      <div>
+      <div class="exp-block">
         <div class="flex justify-between items-baseline mb-1">
           <h4 class="font-display font-bold text-lg text-zinc-900">DXC.Technology (Computer Science Corporation) Hyderabad</h4>
           <span class="text-sm font-medium text-accent">Sep 2017 – Apr 2021</span>
@@ -181,7 +182,9 @@ h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif}
         </ul>
       </div>
 
-      <div>
+      <div class="page-break"></div>
+
+      <div class="exp-block">
         <div class="flex justify-between items-baseline mb-1">
           <h4 class="font-display font-bold text-lg text-zinc-900">Active Pharma Labs | Hyderabad, India</h4>
           <span class="text-sm font-medium text-accent">2016 - 2017</span>
@@ -192,15 +195,14 @@ h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif}
         </ul>
       </div>
 
-      <div class="page-break"></div>
 
-      <div>
+      <div class="exp-block">
         <div class="flex justify-between items-baseline mb-1">
           <h4 class="font-display font-bold text-lg text-zinc-900">CARE Hospitals, Hyderabad, India</h4>
           <span class="text-sm font-medium text-accent">2015 to 2016</span>
         </div>
         <p class="text-sm font-medium text-zinc-600 mb-3">Pharmacist</p>
-        <p class="text-sm text-zinc-700 mb-2">Implemented effective measures to ensure pharmacy maintains ample supply of lifesaving drugs and offers reasonable prices to meet needs of patients. Iinterpreted written prescriptions, checked for drug interactions/allergies, and entered prescription/patient data into computer systems. Interpreted and processed medication orders under supervision of pharmacy director to ensure accurate and timely fulfilment.</p>
+        <p class="text-sm text-zinc-700 mb-2">Implemented effective measures to ensure pharmacy maintains ample supply of lifesaving drugs and offers reasonable prices to meet needs of patients. Interpreted written prescriptions, checked for drug interactions/allergies, and entered prescription/patient data into computer systems. Interpreted and processed medication orders under supervision of pharmacy director to ensure accurate and timely fulfilment.</p>
         <ul class="list-disc text-sm text-zinc-700 space-y-2 pl-4">
           <li>Provided effective training and guidance on pharmacy support technicians.</li>
           <li>Reviewed physician orders to assess and ensure accuracy/safety prior to further processing.</li>
