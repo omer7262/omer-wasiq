@@ -1,33 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{
-  dark: localStorage.getItem('theme')==='dark'||(!localStorage.getItem('theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches),
-  scrolled: false,
-  mobileMenu: false,
-  progress: 0
-}" :class="{'dark':dark}" x-init="
-  $watch('dark', v => localStorage.setItem('theme', v ? 'dark' : 'light'));
-  window.addEventListener('scroll', () => {
-    scrolled = window.scrollY > 20;
-    progress = Math.min(100, Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100));
-  }, { passive: true });
-" class="scroll-smooth">
+<html lang="en" x-data="caseStudy()" :class="{'dark':dark}" x-init="init()" class="scroll-smooth">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Area 23 (IPG Health) Regulatory Operations case study by Omer Wasiq. Senior Reg Ops Specialist managing Veeva PromoMats submissions for JNJ, Novartis, GSK and AstraZeneca brands."/>
   <meta name="author" content="Omer Wasiq"/>
-  <meta property="og:title" content="Area 23 IPG Health — Regulatory Ops Case Study · Omer Wasiq"/>
-  <meta property="og:description" content="Area 23 (IPG Health) Regulatory Operations case study by Omer Wasiq. Senior Reg Ops Specialist managing Veeva PromoMats submissions for JNJ, Novartis, GSK and AstraZeneca brands."/>
-  <meta property="og:type" content="article"/>
-  <meta property="og:url" content="https://www.omerwasiq.com/case-study.html"/>
-  <meta property="og:image" content="https://www.omerwasiq.com/me.jpeg"/>
-  <meta property="og:image:width" content="1200"/>
-  <meta property="og:image:height" content="630"/>
-  <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="Area 23 IPG Health — Regulatory Ops Case Study · Omer Wasiq"/>
-  <meta name="twitter:description" content="Area 23 (IPG Health) Regulatory Operations case study by Omer Wasiq."/>
-  <meta name="twitter:image" content="https://www.omerwasiq.com/me.jpeg"/>
-  <title>Area 23 (IPG Health) — Reg Ops Case Study · Omer Wasiq</title>
+  <title x-text="project ? project.metaTitle + ' · Omer Wasiq' : 'Case Study · Omer Wasiq'">Case Study · Omer Wasiq</title>
+  <meta name="description" :content="project ? project.metaDesc : ''"/>
   <link rel="icon" type="image/jpeg" href="me.jpeg">
   <link rel="apple-touch-icon" href="me.jpeg">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -62,16 +40,10 @@
     [x-cloak]{display:none!important;}
     .photo-frame{position:relative;overflow:hidden;background:#e4e4e7;}
     .photo-frame img{width:100%;height:100%;object-fit:cover;display:block;}
-
-    /* Reading progress */
     .progress-bar{position:fixed;top:0;left:0;height:3px;background:#FF6B2B;z-index:100;transition:width .1s linear;}
-
-    /* Reveal */
     .reveal{opacity:0;transform:translateY(22px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);}
     .reveal.visible{opacity:1;transform:translateY(0);}
     .d1{transition-delay:.07s}.d2{transition-delay:.14s}.d3{transition-delay:.21s}.d4{transition-delay:.28s}
-
-    /* Case study prose */
     .prose-cs h2{font-family:'PT Sans',sans-serif;font-size:1.55rem;font-weight:700;margin:2.75rem 0 1rem;line-height:1.25;}
     .prose-cs h3{font-family:'PT Sans',sans-serif;font-size:1.15rem;font-weight:700;margin:2rem 0 .6rem;line-height:1.3;color:#FF6B2B;}
     .prose-cs p{margin:0 0 1.4rem;line-height:1.82;color:#52525b;}
@@ -86,17 +58,9 @@
     .prose-cs hr{border:none;border-top:1px solid #e4e4e7;margin:2.5rem 0;}
     .dark .prose-cs hr{border-top-color:#27272a;}
     .prose-cs a{color:#FF6B2B;text-decoration:underline;text-underline-offset:3px;}
-
-    /* Stat card */
     .stat-card{border-left:3px solid #FF6B2B;}
-
-    /* Image caption */
     .img-caption{font-size:.8rem;color:#a1a1aa;text-align:center;margin-top:.6rem;}
-
-    /* Step badge */
     .step-badge{width:2rem;height:2rem;min-width:2rem;border-radius:50%;background:#FF6B2B;color:#fff;font-family:'PT Sans',sans-serif;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;}
-
-    /* card hover */
     .card-h{transition:transform .28s cubic-bezier(.4,0,.2,1),border-color .18s;}
     .card-h:hover{transform:translateY(-4px);}
   </style>
@@ -106,7 +70,15 @@
   <!-- Reading progress bar -->
   <div class="progress-bar" :style="`width:${progress}%`" role="progressbar" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100" aria-label="Reading progress"></div>
 
-  <!-- ═══ NAV ═══ -->
+  <!-- 404 / loading state -->
+  <div x-show="!project && !loading" x-cloak class="min-h-screen flex flex-col items-center justify-center gap-4 px-6 text-center">
+    <p class="text-6xl font-display font-bold text-accent">404</p>
+    <h1 class="text-2xl font-display font-bold text-zinc-900 dark:text-white">Project not found</h1>
+    <p class="text-zinc-500">That project ID doesn't exist. Head back to the projects page.</p>
+    <a href="projects.html" class="mt-4 inline-flex items-center gap-2 btn-primary bg-accent text-white font-medium px-6 py-2.5 rounded-full hover:bg-accent-light transition-colors">← Back to projects</a>
+  </div>
+
+  <!-- NAV -->
   <header class="fixed top-0.5 left-0 right-0 z-50 transition-all duration-300"
     :class="scrolled ? 'bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md shadow-sm shadow-black/5' : 'bg-transparent'">
     <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between" aria-label="Main navigation">
@@ -117,7 +89,6 @@
         <li><a href="index.html#services" class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Services</a></li>
         <li><a href="projects.html" class="nav-link text-accent font-medium">Work</a></li>
         <li><a href="index.html#about" class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">About</a></li>
-
         <li><a href="index.html#contact" class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Contact</a></li>
       </ul>
       <div class="flex items-center gap-3">
@@ -142,19 +113,15 @@
         <li><a href="index.html#services" @click="mobileMenu=false" class="block text-zinc-700 dark:text-zinc-300">Services</a></li>
         <li><a href="projects.html" @click="mobileMenu=false" class="block text-accent font-medium">Work</a></li>
         <li><a href="index.html#about" @click="mobileMenu=false" class="block text-zinc-700 dark:text-zinc-300">About</a></li>
-
         <li><a href="index.html#contact" @click="mobileMenu=false" class="block text-zinc-700 dark:text-zinc-300">Contact</a></li>
       </ul>
     </div>
   </header>
 
-  <main>
-
-    <!-- ═══ CASE STUDY HEADER ═══ -->
+  <main x-show="project" x-cloak>
+    <!-- CASE STUDY HEADER -->
     <article>
       <header class="pt-32 pb-10 max-w-4xl mx-auto px-6">
-
-        <!-- Back link -->
         <a href="projects.html" class="inline-flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-accent transition-colors mb-8">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
           Back to projects
@@ -162,140 +129,53 @@
 
         <!-- Tags + date -->
         <div class="flex flex-wrap items-center gap-3 mb-6">
-          <span class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-2.5 py-1 rounded-full">Regulatory Ops</span>
-          <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2.5 py-1 rounded-full">Veeva PromoMats</span>
-          <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2.5 py-1 rounded-full">JNJ · Novartis · GSK · AZ</span>
-          <span class="text-xs text-zinc-400 ml-1">Sep 2025 – Present</span>
+          <template x-for="tag in (project ? project.tags : [])" :key="tag">
+            <span class="text-xs px-2.5 py-1 rounded-full"
+              :class="tag === (project ? project.categoryLabel : '') ? 'bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'"
+              x-text="tag"></span>
+          </template>
+          <span class="text-xs text-zinc-400 ml-1" x-text="project ? project.year : ''"></span>
         </div>
 
-        <h1 class="reveal font-display font-bold text-4xl md:text-5xl lg:text-6xl text-zinc-900 dark:text-white leading-tight mb-6">
-          Area 23 (IPG Health) — Senior Regulatory Operations Specialist
-        </h1>
+        <h1 class="reveal font-display font-bold text-4xl md:text-5xl lg:text-6xl text-zinc-900 dark:text-white leading-tight mb-6" x-text="project ? project.title : ''"></h1>
 
-        <p class="reveal d1 text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10 max-w-2xl">
-          Delivering precision regulatory operations at one of New York's premier pharmaceutical advertising agencies — managing the complete submission lifecycle, Veeva Vault systems, DAM administration, and promotional compliance for multiple global pharma brands simultaneously.
-        </p>
+        <p class="reveal d1 text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10 max-w-2xl" x-text="project ? project.subtitle : ''"></p>
 
         <!-- Meta row -->
         <div class="reveal d2 grid grid-cols-2 md:grid-cols-4 gap-4 py-8 border-t border-b border-zinc-100 dark:border-zinc-900">
-          <div>
-            <p class="text-xs text-zinc-400 uppercase tracking-widest mb-1">Agency</p>
-            <p class="font-medium text-zinc-900 dark:text-white text-sm">Area 23 (IPG Health)</p>
-          </div>
-          <div>
-            <p class="text-xs text-zinc-400 uppercase tracking-widest mb-1">Role</p>
-            <p class="font-medium text-zinc-900 dark:text-white text-sm">Senior Regulatory Ops Specialist</p>
-          </div>
-          <div>
-            <p class="text-xs text-zinc-400 uppercase tracking-widest mb-1">Location</p>
-            <p class="font-medium text-zinc-900 dark:text-white text-sm">New York, USA (Remote)</p>
-          </div>
-          <div>
-            <p class="text-xs text-zinc-400 uppercase tracking-widest mb-1">Clients</p>
-            <p class="font-medium text-zinc-900 dark:text-white text-sm">JNJ, Novartis, GSK, AZ</p>
-          </div>
+          <template x-for="meta in (project ? project.metaRow : [])" :key="meta.label">
+            <div>
+              <p class="text-xs text-zinc-400 uppercase tracking-widest mb-1" x-text="meta.label"></p>
+              <p class="font-medium text-zinc-900 dark:text-white text-sm" x-text="meta.value"></p>
+            </div>
+          </template>
         </div>
       </header>
 
-      <!-- ═══ HERO IMAGE ═══ -->
+      <!-- HERO IMAGE -->
       <div class="max-w-6xl mx-auto px-6 mb-16">
         <div class="reveal photo-frame w-full h-72 md:h-[480px] rounded-3xl">
-          <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=1400&q=80" alt="Regulatory Operations Workflow" loading="eager"/>
+          <img :src="project ? project.heroImg : ''" :alt="project ? project.title : ''" loading="eager"/>
         </div>
       </div>
 
-      <!-- ═══ RESULTS BANNER ═══ -->
+      <!-- STATS BANNER -->
       <div class="max-w-4xl mx-auto px-6 mb-16">
         <div class="reveal grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="stat-card bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-5 pl-6">
-            <p class="font-display font-bold text-3xl text-zinc-900 dark:text-white">8+</p>
-            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Years Reg Ops experience</p>
-          </div>
-          <div class="stat-card bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-5 pl-6">
-            <p class="font-display font-bold text-3xl text-accent">4+</p>
-            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Global pharma brands</p>
-          </div>
-          <div class="stat-card bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-5 pl-6">
-            <p class="font-display font-bold text-3xl text-zinc-900 dark:text-white">0</p>
-            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Compliance failures on record</p>
-          </div>
-          <div class="stat-card bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-5 pl-6">
-            <p class="font-display font-bold text-3xl text-zinc-900 dark:text-white">2</p>
-            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Top global pharma agencies</p>
-          </div>
+          <template x-for="stat in (project ? project.stats : [])" :key="stat.label">
+            <div class="stat-card bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-5 pl-6">
+              <p class="font-display font-bold text-3xl" :class="stat.accent ? 'text-accent' : 'text-zinc-900 dark:text-white'" x-text="stat.value"></p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-snug" x-text="stat.label"></p>
+            </div>
+          </template>
         </div>
       </div>
 
-      <!-- ═══ ARTICLE BODY ═══ -->
-      <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs">
-
-        <h2>The engagement</h2>
-        <p>Area 23, part of IPG Health — one of the world's leading healthcare advertising groups — engaged me as a Senior Regulatory Operations Specialist. Working across multiple global pharmaceutical accounts simultaneously, I serve as the regulatory operations backbone for their client teams, ensuring all promotional and medical materials meet FDA, EMA, ABPI, and EFPIA requirements before deployment.</p>
-        <p>The scope spans the complete submission lifecycle: from initial document setup, metadata tagging, and routing configuration in Veeva Vault PromoMats, through to final approval, archival, and DAM deployment. I manage multiple parallel brand campaigns with different approval timelines, stakeholder teams, and regulatory jurisdiction requirements.</p>
-
-        <blockquote>
-          <p>"Omer's attention to detail and deep understanding of Veeva PromoMats is outstanding. He managed our entire JNJ submission library with zero errors over an 18-month engagement. Truly an expert in the field."</p>
-        </blockquote>
-
-        <h2>Clients &amp; brands managed</h2>
-        <h3>Johnson &amp; Johnson</h3>
-        <p>Managing regulatory operations for three major JNJ brands: <strong>Darzalex</strong> (daratumumab, multiple myeloma), <strong>Tremfya</strong> (guselkumab, plaque psoriasis), and <strong>ICOTYDE</strong>. Each brand carries distinct submission requirements, medical/legal/regulatory (MLR) committee structures, and promotional material categories spanning digital, print, congress materials, and sales tools.</p>
-
-        <h3>Novartis</h3>
-        <p>Providing regulatory operations coverage for three Novartis brands: <strong>Cosentyx</strong> (secukinumab, psoriasis/PsA/AS), <strong>Kesimpta</strong> (ofatumumab, relapsing MS), and <strong>Leqvio</strong> (inclisiran, LDL-C reduction). Each requires careful management of indication-specific claims, black box warning placements, and multi-market adaptation workflows.</p>
-
-        <h3>GSK &amp; AstraZeneca</h3>
-        <p>Supporting <strong>Zejula</strong> (niraparib, ovarian cancer; GSK) and <strong>Fasenra</strong> (benralizumab, severe eosinophilic asthma; AstraZeneca) promotional operations, including HCP-facing materials, patient education content, and congress presentations.</p>
-
-        <h2>Core responsibilities</h2>
-        <h3>Veeva Vault PromoMats administration</h3>
-        <p>Managing the complete Veeva Vault PromoMats environment for multiple client accounts simultaneously. This includes document type configuration, custom metadata taxonomy design and maintenance, user role assignment, workflow routing logic, SOP compliance checks, and training new team members on system use. I maintain audit trails and submission libraries to ensure materials are always retrievable and compliant.</p>
-
-        <h3>Submission lifecycle management</h3>
-        <p>From submission initiation through final approval and archival, I manage every touchpoint of the material lifecycle. This includes: coordinating with scientific, legal, compliance, and marketing stakeholders; routing materials through multi-tier MLR review processes; tracking comments, revisions, and version control; and ensuring final approved materials are correctly distributed to DAM systems for deployment.</p>
-
-        <h3>DAM administration</h3>
-        <p>Administering Digital Asset Management systems to ensure approved promotional materials are correctly tagged, accessible, and version-controlled. This includes managing asset metadata, deprecation workflows for outdated materials, and access controls for different stakeholder groups across agency and client teams.</p>
-
-        <h2>Regulatory compliance framework</h2>
-        <p>All materials I manage are reviewed against applicable regulatory frameworks:</p>
-        <ul>
-          <li><strong>FDA (USA):</strong> 21 CFR Part 202 promotional labelling requirements, risk communication standards, fair balance requirements</li>
-          <li><strong>EMA (EU):</strong> Directive 2001/83/EC advertising provisions, EFPIA Code on interactions with healthcare professionals</li>
-          <li><strong>ABPI (UK):</strong> Code of Practice for the Pharmaceutical Industry, including digital/social media guidelines</li>
-          <li><strong>EFPIA:</strong> Code on the promotion of prescription-only medicines to, and interactions with, healthcare professionals</li>
-        </ul>
-
-        <h2>Master's research — downloadable thesis</h2>
-        <p>My regulatory operations expertise is underpinned by a strong scientific foundation. I hold a Master's degree in Pharmaceutical Sciences, with a thesis covering:</p>
-        <ul>
-          <li>Oral extended-release drug formulation and matrix tablet design</li>
-          <li>Osmotic oral drug delivery systems (OROS) applied to Valsartan</li>
-          <li>In vitro release kinetics and bioequivalence assessment frameworks</li>
-          <li>Clinical safety and efficacy evaluation methodology</li>
-        </ul>
-        <p>This scientific grounding gives me a unique ability to engage with complex medical content, understand pharmacological claims at a deep level, and support medico-legal review teams with scientific accuracy checks.</p>
-
-        <div style="margin:2rem 0;padding:1.5rem;background:#fff7f4;border-radius:12px;border:1px solid #fed7c0;">
-          <p style="margin:0 0 .75rem;font-weight:600;color:#FF6B2B;">Download Master's Thesis (PDF)</p>
-          <p style="margin:0 0 1rem;font-size:.9rem;color:#52525b;">My postgraduate research in pharmaceutical sciences — covering oral extended-release formulation, osmotic drug delivery systems, and clinical evaluation frameworks.</p>
-          <a href="assets/Docs/Formulation_and_invitro_evaluation_of_oral_extende.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:.5rem;background:#FF6B2B;color:#fff;padding:.625rem 1.25rem;border-radius:9999px;font-size:.875rem;font-weight:500;text-decoration:none;">
-            <svg style="width:1rem;height:1rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            Download Thesis PDF
-          </a>
-        </div>
-
-        <h2>Reflections</h2>
-        <p>The most important lesson from 8+ years in pharmaceutical regulatory operations is that precision and process discipline are non-negotiable. A single metadata error or missed SOP step can delay a product launch, trigger a regulatory query, or expose an organisation to compliance risk. The best regulatory ops professionals are those who combine deep system knowledge with scientific curiosity and genuine stakeholder partnership.</p>
-        <p>Working across multiple global brands simultaneously demands a level of organisational rigour and context-switching ability that I've continually refined. Each brand has its own therapeutic area nuances, medical community expectations, and regulatory jurisdiction requirements — understanding these distinctions makes me a more effective partner to the scientific, marketing, and legal teams I support.</p>
-
-        <hr/>
-        <p><em>Interested in a regulatory operations engagement? <a href="index.html#contact">Get in touch</a> — I'm available for freelance contracts with UK and USA pharma agencies.</em></p>
-
-      </div>
+      <!-- ARTICLE BODY — rendered from HTML string -->
+      <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs" x-html="project ? project.body : ''"></div>
     </article>
 
-    <!-- ═══ MORE PROJECTS ═══ -->
+    <!-- MORE PROJECTS -->
     <section class="bg-zinc-50 dark:bg-zinc-900/50 py-16">
       <div class="max-w-6xl mx-auto px-6">
         <div class="flex items-center justify-between mb-8">
@@ -303,37 +183,22 @@
           <a href="projects.html" class="text-sm font-medium text-accent nav-link hidden md:block">View all →</a>
         </div>
         <div class="grid md:grid-cols-3 gap-6">
-
-          <article class="reveal card-h group bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-100 dark:border-zinc-800 hover:border-accent transition-colors">
-            <div class="photo-frame w-full h-44">
-              <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80" alt="McCann Health London" loading="lazy"/>
-            </div>
-            <div class="p-5">
-              <div class="flex gap-2 mb-2">
-                <span class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-2.5 py-1 rounded-full">Regulatory Ops</span>
+          <template x-for="rel in relatedProjects" :key="rel.id">
+            <article class="reveal card-h group bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-100 dark:border-zinc-800 hover:border-accent transition-colors">
+              <div class="photo-frame w-full h-44">
+                <img :src="rel.img" :alt="rel.title" loading="lazy"/>
               </div>
-              <a href="#">
-                <h3 class="font-display font-bold text-base text-zinc-900 dark:text-white mb-2 group-hover:text-accent transition-colors">McCann Health London — Medical Editor</h3>
-              </a>
-              <a href="#" class="text-sm font-medium text-accent nav-link">View project →</a>
-            </div>
-          </article>
-
-          <article class="reveal card-h group bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-100 dark:border-zinc-800 hover:border-accent transition-colors">
-            <div class="photo-frame w-full h-44">
-              <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=700&q=80" alt="Veeva Vault RIM" loading="lazy"/>
-            </div>
-            <div class="p-5">
-              <div class="flex gap-2 mb-2">
-                <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2.5 py-1 rounded-full">Veeva Vault</span>
+              <div class="p-5">
+                <div class="flex gap-2 mb-2">
+                  <span class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-2.5 py-1 rounded-full" x-text="rel.categoryLabel"></span>
+                </div>
+                <a :href="`case-study.html?id=${rel.id}`">
+                  <h3 class="font-display font-bold text-base text-zinc-900 dark:text-white mb-2 group-hover:text-accent transition-colors" x-text="rel.title"></h3>
+                </a>
+                <a :href="`case-study.html?id=${rel.id}`" class="text-sm font-medium text-accent nav-link">View project →</a>
               </div>
-              <a href="#">
-                <h3 class="font-display font-bold text-base text-zinc-900 dark:text-white mb-2 group-hover:text-accent transition-colors">Veeva Vault RIM — Regulatory Submissions</h3>
-              </a>
-              <a href="#" class="text-sm font-medium text-accent nav-link">View project →</a>
-            </div>
-          </article>
-
+            </article>
+          </template>
         </div>
         <div class="text-center mt-8 md:hidden">
           <a href="projects.html" class="text-sm font-medium text-accent">View all projects →</a>
@@ -341,7 +206,7 @@
       </div>
     </section>
 
-    <!-- ═══ CTA ═══ -->
+    <!-- CTA -->
     <section class="py-24">
       <div class="max-w-6xl mx-auto px-6">
         <div class="bg-zinc-900 dark:bg-zinc-800 rounded-3xl p-10 md:p-14 text-center relative overflow-hidden">
@@ -358,12 +223,11 @@
         </div>
       </div>
     </section>
-
   </main>
 
-  <footer class="border-t border-zinc-100 dark:border-zinc-900">
+  <footer class="border-t border-zinc-100 dark:border-zinc-900" x-show="project" x-cloak>
     <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p class="text-sm text-zinc-400">&copy; <span id="yr"></span> OmerWasiq. All rights reserved. <br> Developed by <a href="https://github.com/omer7262" target="_blank" class="font-bold hover:text-white transition-colors">OmerWasiq</a> • Distributed by <a href="https://github.com/omer7262" target="_blank" class="font-bold hover:text-white transition-colors">Github</a></p>
+      <p class="text-sm text-zinc-400">© <span id="yr"></span> OmerWasiq. All rights reserved. <br> Developed by <a href="https://github.com/omer7262" target="_blank" class="font-bold hover:text-white transition-colors">OmerWasiq</a> • Distributed by <a href="https://github.com/omer7262" target="_blank" class="font-bold hover:text-white transition-colors">Github</a></p>
       <p class="text-xs text-zinc-500">Built with <a href="https://tailwindcss.com" class="hover:text-accent transition-colors" rel="noopener noreferrer" target="_blank">Tailwind CSS</a> &amp; <a href="https://alpinejs.dev" class="hover:text-accent transition-colors" rel="noopener noreferrer" target="_blank">Alpine.js</a></p>
     </div>
   </footer>
@@ -371,14 +235,417 @@
   <script>
     document.getElementById('yr').textContent = new Date().getFullYear();
 
-    // Reveal on scroll
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-      });
-    }, { threshold: .08, rootMargin: '0px 0px -30px 0px' });
-    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-  </script>
+    // ─── PROJECT DATA ────────────────────────────────────────────────────────────
+    const ALL_PROJECTS = [
+      {
+        id: 1,
+        category: 'regops', categoryLabel: 'Regulatory Ops',
+        tags: ['Regulatory Ops','Veeva PromoMats','JNJ · Novartis · GSK · AZ'],
+        year: 'Sep 2025 – Present',
+        img: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=700&q=80',
+        title: 'Area 23 (IPG Health) — Senior Regulatory Operations Specialist',
+        metaTitle: 'Area 23 (IPG Health) — Reg Ops Case Study',
+        metaDesc: 'Area 23 (IPG Health) Regulatory Operations case study by Omer Wasiq. Senior Reg Ops Specialist managing Veeva PromoMats submissions for JNJ, Novartis, GSK and AstraZeneca brands.',
+        subtitle: 'Delivering precision regulatory operations at one of New York\'s premier pharmaceutical advertising agencies — managing the complete submission lifecycle, Veeva Vault systems, DAM administration, and promotional compliance for multiple global pharma brands simultaneously.',
+        heroImg: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=1400&q=80',
+        metaRow: [
+          { label:'Agency', value:'Area 23 (IPG Health)' },
+          { label:'Role', value:'Senior Regulatory Ops Specialist' },
+          { label:'Location', value:'New York, USA (Remote)' },
+          { label:'Clients', value:'JNJ, Novartis, GSK, AZ' }
+        ],
+        stats: [
+          { value:'8+', label:'Years Reg Ops experience', accent:false },
+          { value:'4+', label:'Global pharma brands', accent:true },
+          { value:'0', label:'Compliance failures on record', accent:false },
+          { value:'2', label:'Top global pharma agencies', accent:false }
+        ],
+        body: `
+          <h2>The engagement</h2>
+          <p>Area 23, part of IPG Health — one of the world's leading healthcare advertising groups — engaged me as a Senior Regulatory Operations Specialist. Working across multiple global pharmaceutical accounts simultaneously, I serve as the regulatory operations backbone for their client teams, ensuring all promotional and medical materials meet FDA, EMA, ABPI, and EFPIA requirements before deployment.</p>
+          <p>The scope spans the complete submission lifecycle: from initial document setup, metadata tagging, and routing configuration in Veeva Vault PromoMats, through to final approval, archival, and DAM deployment. I manage multiple parallel brand campaigns with different approval timelines, stakeholder teams, and regulatory jurisdiction requirements.</p>
+          <blockquote><p>"Omer's attention to detail and deep understanding of Veeva PromoMats is outstanding. He managed our entire JNJ submission library with zero errors over an 18-month engagement. Truly an expert in the field."</p></blockquote>
+          <h2>Clients &amp; brands managed</h2>
+          <h3>Johnson &amp; Johnson</h3>
+          <p>Managing regulatory operations for three major JNJ brands: <strong>Darzalex</strong> (daratumumab, multiple myeloma), <strong>Tremfya</strong> (guselkumab, plaque psoriasis), and <strong>ICOTYDE</strong>. Each brand carries distinct submission requirements, MLR committee structures, and promotional material categories spanning digital, print, congress materials, and sales tools.</p>
+          <h3>Novartis</h3>
+          <p>Providing regulatory operations coverage for three Novartis brands: <strong>Cosentyx</strong> (secukinumab, psoriasis/PsA/AS), <strong>Kesimpta</strong> (ofatumumab, relapsing MS), and <strong>Leqvio</strong> (inclisiran, LDL-C reduction). Each requires careful management of indication-specific claims, black box warning placements, and multi-market adaptation workflows.</p>
+          <h3>GSK &amp; AstraZeneca</h3>
+          <p>Supporting <strong>Zejula</strong> (niraparib, ovarian cancer; GSK) and <strong>Fasenra</strong> (benralizumab, severe eosinophilic asthma; AstraZeneca) promotional operations, including HCP-facing materials, patient education content, and congress presentations.</p>
+          <h2>Core responsibilities</h2>
+          <h3>Veeva Vault PromoMats administration</h3>
+          <p>Managing the complete Veeva Vault PromoMats environment for multiple client accounts. This includes document type configuration, custom metadata taxonomy design and maintenance, user role assignment, workflow routing logic, SOP compliance checks, and training new team members.</p>
+          <h3>Submission lifecycle management</h3>
+          <p>From submission initiation through final approval and archival, I manage every touchpoint of the material lifecycle — coordinating with scientific, legal, compliance, and marketing stakeholders; routing materials through multi-tier MLR review processes; and ensuring final approved materials are distributed to DAM systems for deployment.</p>
+          <h3>DAM administration</h3>
+          <p>Administering Digital Asset Management systems to ensure approved promotional materials are correctly tagged, accessible, and version-controlled across agency and client teams.</p>
+          <h2>Regulatory compliance framework</h2>
+          <p>All materials are reviewed against applicable regulatory frameworks:</p>
+          <ul>
+            <li><strong>FDA (USA):</strong> 21 CFR Part 202 promotional labelling requirements, risk communication standards, fair balance requirements</li>
+            <li><strong>EMA (EU):</strong> Directive 2001/83/EC advertising provisions, EFPIA Code on interactions with healthcare professionals</li>
+            <li><strong>ABPI (UK):</strong> Code of Practice for the Pharmaceutical Industry, including digital/social media guidelines</li>
+            <li><strong>EFPIA:</strong> Code on the promotion of prescription-only medicines to healthcare professionals</li>
+          </ul>
+          <h2>Reflections</h2>
+          <p>The most important lesson from 8+ years in pharmaceutical regulatory operations is that precision and process discipline are non-negotiable. Working across multiple global brands simultaneously demands organisational rigour and context-switching ability that I've continually refined. Each brand has its own therapeutic area nuances, medical community expectations, and regulatory jurisdiction requirements.</p>
+          <hr/>
+          <p><em>Interested in a regulatory operations engagement? <a href="index.html#contact">Get in touch</a> — I'm available for freelance contracts with UK and USA pharma agencies.</em></p>
+        `
+      },
+      {
+        id: 2,
+        category: 'regops', categoryLabel: 'Regulatory Ops',
+        tags: ['Regulatory Ops','Veeva PromoMats','Medical Editing'],
+        year: 'Jun 2024 – Dec 2025',
+        img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80',
+        title: 'McCann Health London — Medical Editor & Reg Ops',
+        metaTitle: 'McCann Health London — Medical Editor & Reg Ops Case Study',
+        metaDesc: 'McCann Health London case study by Omer Wasiq. End-to-end regulatory operations and promotional review support at a leading global healthcare communications agency.',
+        subtitle: 'Providing end-to-end regulatory operations and promotional review support at a leading global healthcare communications agency — QC, routing, and lifecycle management for JNJ and Novartis brands.',
+        heroImg: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1400&q=80',
+        metaRow: [
+          { label:'Agency', value:'McCann Health London' },
+          { label:'Role', value:'Medical Editor & Reg Ops' },
+          { label:'Location', value:'London, UK (Hybrid)' },
+          { label:'Clients', value:'JNJ, Novartis' }
+        ],
+        stats: [
+          { value:'100+', label:'MLR submissions managed', accent:false },
+          { value:'2', label:'Global pharma brands', accent:true },
+          { value:'18mo', label:'Engagement duration', accent:false },
+          { value:'0', label:'Regulatory queries raised', accent:false }
+        ],
+        body: `
+          <h2>The engagement</h2>
+          <p>McCann Health London is one of the world's premier healthcare communications agencies, part of the McCann Worldgroup network. In this dual-function role, I combined deep medical editorial expertise with regulatory operations to deliver end-to-end MLR support for global pharmaceutical clients.</p>
+          <p>Operating at the intersection of scientific accuracy, creative excellence, and regulatory compliance, I ensured all promotional and educational materials met the strict requirements of UK (ABPI), EU (EMA/EFPIA), and US (FDA) regulatory frameworks.</p>
+          <blockquote><p>"Omer brought an exceptional level of scientific rigour to our medical editing function, while simultaneously managing the full Veeva PromoMats submission workflow. Rare to find both skills in one person."</p></blockquote>
+          <h2>Key responsibilities</h2>
+          <h3>Medical editing &amp; scientific content review</h3>
+          <p>Conducted thorough medical-editorial QC of all promotional and scientific materials — checking claims against approved prescribing information (SmPC/PI), source data verification against cited clinical trial reports, and ensuring fair balance across all promotional items. Covered therapeutic areas including immunology, oncology, and cardiovascular disease.</p>
+          <h3>Regulatory operations &amp; lifecycle management</h3>
+          <p>Managed the complete document lifecycle in Veeva Vault PromoMats — from submission initiation, metadata configuration and routing, through multi-tier MLR review, revision tracking, final approval and archival. Maintained audit trails and submission libraries for both JNJ and Novartis brand portfolios.</p>
+          <h3>Stakeholder coordination</h3>
+          <p>Served as the primary regulatory operations liaison between the agency creative teams, client regulatory affairs departments, medical/legal review committees, and local operating company (LOC) reviewers across UK, European, and US markets.</p>
+          <h2>Therapeutic areas covered</h2>
+          <ul>
+            <li><strong>Immunology:</strong> JNJ biologics for psoriasis, inflammatory bowel disease, and multiple sclerosis</li>
+            <li><strong>Cardiology:</strong> Novartis cardiovascular portfolio including LDL-C management agents</li>
+            <li><strong>Oncology:</strong> Supportive materials for oncology brands under MLR oversight</li>
+          </ul>
+          <h2>Systems &amp; tools</h2>
+          <p>Daily usage of Veeva Vault PromoMats for document management, PromoMats workflow configuration, and reporting. Additional tools included ISI Publisher for eCTD publishing support, and agency document management systems for creative asset control.</p>
+          <hr/>
+          <p><em>Interested in editorial regulatory operations expertise? <a href="index.html#contact">Let's connect</a>.</em></p>
+        `
+      },
+      {
+        id: 3,
+        category: 'regops', categoryLabel: 'Regulatory Ops',
+        tags: ['Regulatory Ops','Quality Control','Clinical Docs'],
+        year: 'Nov 2023 – Aug 2024',
+        img: 'https://images.unsplash.com/photo-1579154341098-e4e158cc7f55?w=700&q=80',
+        title: 'Novartis Healthcare Pvt Ltd — Senior QC Specialist',
+        metaTitle: 'Novartis Healthcare — Senior QC Specialist Case Study',
+        metaDesc: 'Novartis Healthcare case study by Omer Wasiq. Assessed validity of clinical and scientific content in preclinical and clinical documents for global regulatory submissions.',
+        subtitle: 'Assessed validity of clinical/scientific content in preclinical and clinical documents — source data verification of clinical study reports and factual evidence development for Submission Teams.',
+        heroImg: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1400&q=80',
+        metaRow: [
+          { label:'Company', value:'Novartis Healthcare Pvt Ltd' },
+          { label:'Role', value:'Senior QC Specialist' },
+          { label:'Location', value:'Hyderabad, India' },
+          { label:'Function', value:'Clinical Document QC' }
+        ],
+        stats: [
+          { value:'200+', label:'Clinical docs reviewed', accent:false },
+          { value:'100%', label:'SDV accuracy rate', accent:true },
+          { value:'8', label:'Therapeutic areas covered', accent:false },
+          { value:'0', label:'Submission delays caused', accent:false }
+        ],
+        body: `
+          <h2>The role</h2>
+          <p>At Novartis Healthcare's global capability centre in Hyderabad, I served as a Senior Quality Control Specialist within the clinical documents team, supporting regulatory submission preparation for multiple Novartis global brands. The primary function was independent source data verification (SDV) of clinical study reports (CSRs) and regulatory submission documents.</p>
+          <p>This is among the most technically demanding roles in pharmaceutical regulatory affairs — requiring deep understanding of clinical trial methodology, statistical reporting, and the ICH E3 guideline on structure and content of clinical study reports.</p>
+          <blockquote><p>"Omer's scientific background and meticulous approach to source data verification was instrumental in ensuring our clinical study reports met the highest quality standards ahead of NDA/MAA submissions."</p></blockquote>
+          <h2>Core responsibilities</h2>
+          <h3>Source data verification (SDV)</h3>
+          <p>Conducted independent line-by-line verification of data tables, listings, and figures (TLFs) in clinical study reports against primary source data (statistical analysis datasets, SAS outputs). Identified discrepancies, raised queries to biostatistics and clinical teams, and documented resolution evidence for submission-ready audit trails.</p>
+          <h3>Scientific content validity assessment</h3>
+          <p>Assessed the scientific validity of claims made in preclinical and clinical regulatory documents — verifying that efficacy and safety statements in briefing documents, IND/CTD modules, and product monographs were accurately supported by the cited clinical evidence.</p>
+          <h3>Discrepancy documentation</h3>
+          <p>Developed factual evidence reports to support discrepant findings for Submission Teams, enabling rapid resolution of QC queries before regulatory filing deadlines. Maintained structured discrepancy logs with full audit trails for GxP compliance.</p>
+          <h2>Regulatory frameworks applied</h2>
+          <ul>
+            <li><strong>ICH E3:</strong> Structure and content of clinical study reports</li>
+            <li><strong>ICH E6(R2):</strong> Good Clinical Practice guidelines</li>
+            <li><strong>21 CFR Part 11:</strong> Electronic records and signatures</li>
+            <li><strong>FDA/EMA:</strong> NDA and MAA submission standards for Module 5 clinical documentation</li>
+          </ul>
+          <h2>Therapeutic areas</h2>
+          <p>QC work spanned multiple Novartis therapeutic areas including cardiovascular, immunology, oncology, ophthalmology, and neuroscience, supporting both NDA and MAA submissions in the US and EU markets.</p>
+          <hr/>
+          <p><em>Looking for a specialist in clinical document QC or regulatory submissions? <a href="index.html#contact">Get in touch</a>.</em></p>
+        `
+      },
+      {
+        id: 4,
+        category: 'regops', categoryLabel: 'Regulatory Ops',
+        tags: ['Regulatory Ops','Veeva PromoMats','MLR Review'],
+        year: 'Sep 2021 – Apr 2023',
+        img: 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=700&q=80',
+        title: 'Fishawack Communications — Senior Reg Submission Specialist',
+        metaTitle: 'Fishawack Communications — Senior Reg Submission Specialist Case Study',
+        metaDesc: 'Fishawack Communications case study by Omer Wasiq. Managed MLR review processes for 100+ pharmaceutical submissions using Veeva Vault PromoMats.',
+        subtitle: 'Oversaw Medical-Legal Regulatory (MLR) review processes for clients — enabling successful planning and approval of 100+ pharmaceutical submissions through expert Veeva Vault PromoMats utilisation.',
+        heroImg: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1400&q=80',
+        metaRow: [
+          { label:'Agency', value:'Fishawack Communications' },
+          { label:'Role', value:'Senior Reg Submission Specialist' },
+          { label:'Location', value:'Manchester, UK (Hybrid)' },
+          { label:'Scope', value:'100+ MLR submissions' }
+        ],
+        stats: [
+          { value:'100+', label:'Submissions approved', accent:false },
+          { value:'12+', label:'Pharma client accounts', accent:true },
+          { value:'2yr', label:'Engagement duration', accent:false },
+          { value:'0', label:'SOP compliance failures', accent:false }
+        ],
+        body: `
+          <h2>The engagement</h2>
+          <p>Fishawack Communications is a leading global healthcare communications agency. In this senior specialist role, I was responsible for the end-to-end regulatory submission process for multiple pharmaceutical client accounts simultaneously, serving as the agency's primary expert in Veeva Vault PromoMats and MLR operations.</p>
+          <p>The scope encompassed planning, routing, tracking, and final approval of over 100 promotional and scientific materials through multi-tier Medical-Legal-Regulatory (MLR) review committees across UK, European, and US-regulated markets.</p>
+          <blockquote><p>"Omer's expertise in Veeva Vault transformed our submission workflow. He implemented process improvements that reduced our average review cycle time by 30% while maintaining full compliance across all client accounts."</p></blockquote>
+          <h2>Key achievements</h2>
+          <h3>MLR process management</h3>
+          <p>Led the full Medical-Legal-Regulatory review lifecycle for multiple concurrent client accounts — from submission initiation and routing configuration, through multi-round review, comment adjudication, revision tracking, and final approval. Implemented standardised SOPs that improved submission quality and reduced rework rates.</p>
+          <h3>Veeva Vault PromoMats expertise</h3>
+          <p>Served as the agency's internal Veeva Vault PromoMats subject matter expert — configuring workflows, managing document types and metadata taxonomies, troubleshooting routing issues, training junior team members, and liaising directly with client Veeva administrators for cross-system coordination.</p>
+          <h3>Process improvement</h3>
+          <p>Identified and implemented workflow improvements including standardised submission checklists, metadata quality gates, and pre-submission review protocols that reduced average review cycle times and improved first-pass approval rates across client portfolios.</p>
+          <h2>Client portfolio</h2>
+          <p>Managed regulatory submissions across a diverse range of pharmaceutical and biotech clients spanning therapeutic areas including:</p>
+          <ul>
+            <li>Oncology — targeted therapies and immunotherapies</li>
+            <li>Rare diseases — gene therapies and orphan drugs</li>
+            <li>Vaccines — COVID-19 and seasonal influenza</li>
+            <li>Cardiovascular — antihypertensives and lipid-lowering agents</li>
+          </ul>
+          <h2>Compliance &amp; quality</h2>
+          <p>Maintained 100% SOP compliance across all client accounts throughout the engagement, with zero regulatory queries or compliance failures raised by client regulatory affairs departments. Maintained comprehensive audit trails for all submissions in accordance with GxP requirements.</p>
+          <hr/>
+          <p><em>Looking for MLR submission management expertise? <a href="index.html#contact">Let's talk</a>.</em></p>
+        `
+      },
+      {
+        id: 5,
+        category: 'regops', categoryLabel: 'Regulatory Ops',
+        tags: ['Regulatory Publishing','eCTD','ISI Publisher'],
+        year: 'Sep 2017 – Apr 2021',
+        img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=700&q=80',
+        title: 'DXC Technology — Regulatory Publishing Associate',
+        metaTitle: 'DXC Technology — Regulatory Publishing Associate Case Study',
+        metaDesc: 'DXC Technology case study by Omer Wasiq. Executed QC tasks within electronic publishing system for eCTD lifecycle management for Bristol Myers Squibb and global pharma clients.',
+        subtitle: 'Executed QC tasks within electronic publishing systems for accurate eCTD published output — supporting eCTD lifecycle management for Bristol Myers Squibb and other global pharmaceutical clients using ISI Publisher and ISIToolbox.',
+        heroImg: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1400&q=80',
+        metaRow: [
+          { label:'Company', value:'DXC Technology' },
+          { label:'Role', value:'Regulatory Publishing Associate' },
+          { label:'Location', value:'Hyderabad, India' },
+          { label:'System', value:'ISI Publisher / ISIToolbox' }
+        ],
+        stats: [
+          { value:'4yr', label:'Engagement duration', accent:false },
+          { value:'500+', label:'eCTD sequences published', accent:true },
+          { value:'BMS', label:'Primary client account', accent:false },
+          { value:'100%', label:'On-time submission rate', accent:false }
+        ],
+        body: `
+          <h2>The role</h2>
+          <p>At DXC Technology's Hyderabad global delivery centre, I worked within the regulatory publishing division, supporting global pharmaceutical clients in the preparation and quality control of electronic Common Technical Document (eCTD) submission packages for regulatory authorities including FDA, EMA, and Health Canada.</p>
+          <p>This foundational role in my regulatory career gave me deep hands-on expertise in eCTD structure, regulatory publishing tools, and the meticulous QC discipline required for regulatory submissions — skills that underpin everything I do today.</p>
+          <blockquote><p>"Omer consistently delivered high-quality eCTD submissions ahead of schedule. His attention to the technical requirements of ISI Publisher and his understanding of CTD structure were exceptional from the outset."</p></blockquote>
+          <h2>Core responsibilities</h2>
+          <h3>eCTD publishing &amp; QC</h3>
+          <p>Executed quality control tasks within the ISI Publisher electronic publishing system — reviewing compiled eCTD sequences for structural compliance, hyperlink integrity, document granularity, lifecycle linkage, and metadata accuracy against FDA and EMA technical specifications. Published final submission-ready eCTD packages to regulatory authority electronic gateways.</p>
+          <h3>Bristol Myers Squibb account support</h3>
+          <p>Served as a primary publishing associate on the BMS account — managing eCTD lifecycle activities including new applications, amendments, supplements, and annual reports across multiple marketed and investigational compounds. Supported FDA NDA, IND, and MAA submission packages spanning oncology, immunology, and cardiovascular therapeutic areas.</p>
+          <h3>ISIToolbox &amp; lifecycle management</h3>
+          <p>Utilised ISIToolbox for eCTD lifecycle relationship management — ensuring correct sequence linkage, replacement and deletion operations, and lifecycle validation across the full dossier history for each compound. Maintained accurate publishing logs and submission records for QA audit readiness.</p>
+          <h2>Technical skills developed</h2>
+          <ul>
+            <li><strong>eCTD structure:</strong> Full mastery of ICH M4 CTD structure across all five modules</li>
+            <li><strong>ISI Publisher:</strong> Advanced proficiency in sequence compilation, validation, and gateway submission</li>
+            <li><strong>ISIToolbox:</strong> Lifecycle management, sequence relationships, and submission history management</li>
+            <li><strong>FDA/EMA specifications:</strong> Technical validation against authority-specific eCTD requirements</li>
+            <li><strong>PDF publishing:</strong> Document preparation standards including bookmarks, hyperlinks, and page numbering</li>
+          </ul>
+          <h2>Impact</h2>
+          <p>Over four years, contributed to the successful publication and regulatory submission of 500+ eCTD sequences for BMS and other global pharma clients, maintaining a 100% on-time delivery rate and zero technical rejections from regulatory authority electronic submission gateways.</p>
+          <hr/>
+          <p><em>Need eCTD publishing expertise? <a href="index.html#contact">Get in touch</a>.</em></p>
+        `
+      },
+      {
+        id: 6,
+        category: 'veeva', categoryLabel: 'Veeva Vault',
+        tags: ['Veeva Vault','DAM','Metadata'],
+        year: '2021 – Present',
+        img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=700&q=80',
+        title: 'Veeva Vault PromoMats — DAM Administration',
+        metaTitle: 'Veeva Vault PromoMats — DAM Administration Case Study',
+        metaDesc: 'Veeva Vault PromoMats DAM administration case study by Omer Wasiq. Expert-level administration across multiple client accounts — user management, metadata taxonomy, workflow routing.',
+        subtitle: 'Expert-level administration of Veeva Vault PromoMats across multiple client accounts — user management, document type configuration, metadata taxonomy, workflow routing, and audit trail maintenance.',
+        heroImg: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1400&q=80',
+        metaRow: [
+          { label:'System', value:'Veeva Vault PromoMats' },
+          { label:'Function', value:'DAM Administration' },
+          { label:'Experience', value:'4+ years' },
+          { label:'Accounts', value:'Multiple enterprise clients' }
+        ],
+        stats: [
+          { value:'4+', label:'Years Veeva admin experience', accent:false },
+          { value:'10+', label:'Client vaults administered', accent:true },
+          { value:'1000+', label:'Workflows configured', accent:false },
+          { value:'0', label:'System compliance incidents', accent:false }
+        ],
+        body: `
+          <h2>Overview</h2>
+          <p>Across multiple pharmaceutical agency and client-side roles since 2021, I have developed expert-level proficiency in Veeva Vault PromoMats Digital Asset Management (DAM) administration. This spans the full spectrum of Vault admin capabilities — from initial vault configuration and user onboarding through to advanced workflow design, metadata taxonomy governance, and ongoing system maintenance.</p>
+          <p>My DAM administration expertise is deployed across enterprise pharmaceutical environments where material governance, audit readiness, and regulatory compliance are non-negotiable requirements.</p>
+          <h2>Administration capabilities</h2>
+          <h3>User management &amp; access control</h3>
+          <p>Managing user lifecycle in Vault environments — provisioning and deprovisioning user accounts, configuring role-based access controls aligned to organisational hierarchy, managing security profiles, and ensuring appropriate access segmentation between agency, client, and vendor stakeholders. Maintaining user access logs for audit purposes.</p>
+          <h3>Document type &amp; lifecycle configuration</h3>
+          <p>Designing and maintaining document type hierarchies that reflect each client's content taxonomy — defining document types, subtypes, and classification fields that enable precise material categorisation and retrieval. Configuring lifecycle states, entry criteria, and user action permissions for each document class.</p>
+          <h3>Metadata taxonomy design</h3>
+          <p>Creating and maintaining metadata frameworks that support both regulatory compliance (approval status, expiry dates, indication specificity) and operational efficiency (brand, market, material type, audience). Conducting regular metadata audits to ensure taxonomy integrity and retiring obsolete fields.</p>
+          <h3>Workflow routing logic</h3>
+          <p>Engineering multi-step review workflows that mirror each client's MLR committee structure — configuring parallel and sequential routing, conditional branching, escalation rules, and notification templates. Building workflows that balance thoroughness with efficiency to meet submission turnaround targets.</p>
+          <h2>Governance &amp; compliance</h2>
+          <p>Maintaining audit trail integrity across all vault activities, ensuring full traceability of document history, user actions, and system changes for regulatory inspections. Conducting periodic validation activities to confirm continued GxP compliance of configured workflows and system settings.</p>
+          <ul>
+            <li>Regular vault health checks and system validation documentation</li>
+            <li>SOP development for vault usage policies and training materials</li>
+            <li>Periodic user access reviews aligned to SOX and GxP requirements</li>
+            <li>Vault upgrade impact assessments and UAT coordination</li>
+          </ul>
+          <hr/>
+          <p><em>Need Veeva Vault PromoMats administration expertise? <a href="index.html#contact">Let's talk</a>.</em></p>
+        `
+      },
+      {
+        id: 7,
+        category: 'veeva', categoryLabel: 'Veeva Vault',
+        tags: ['Vault RIM','eCTD','Submissions'],
+        year: '2021 – Present',
+        img: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=700&q=80',
+        title: 'Veeva Vault RIM — Regulatory Information Management',
+        metaTitle: 'Veeva Vault RIM — Regulatory Information Management Case Study',
+        metaDesc: 'Veeva Vault RIM case study by Omer Wasiq. Management of regulatory dossiers, submission planning, and eCTD publishing workflows for FDA and EMA submission packages.',
+        subtitle: 'Management of regulatory dossiers, submission planning, and eCTD publishing workflows within Vault RIM — supporting FDA and EMA submission packages with full audit readiness.',
+        heroImg: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1400&q=80',
+        metaRow: [
+          { label:'System', value:'Veeva Vault RIM' },
+          { label:'Function', value:'Regulatory Information Mgmt' },
+          { label:'Authorities', value:'FDA, EMA' },
+          { label:'Format', value:'eCTD submissions' }
+        ],
+        stats: [
+          { value:'50+', label:'eCTD dossiers managed', accent:false },
+          { value:'2', label:'Major regulatory authorities', accent:true },
+          { value:'100%', label:'Audit readiness maintained', accent:false },
+          { value:'0', label:'Technical submission failures', accent:false }
+        ],
+        body: `
+          <h2>Overview</h2>
+          <p>Veeva Vault RIM (Regulatory Information Management) is the industry's leading end-to-end regulatory operations platform. Across multiple roles since 2021, I have developed practical expertise in using Vault RIM to manage regulatory dossiers, submission planning, eCTD content authoring workflows, and agency intelligence — supporting FDA NDA/IND and EMA MAA submission packages.</p>
+          <p>Vault RIM consolidates regulatory submissions, registrations, correspondence, and intelligence into a single auditable system. My experience spans the Submissions, Registrations, and Publishing modules.</p>
+          <h2>Capabilities</h2>
+          <h3>Dossier management</h3>
+          <p>Managing the complete lifecycle of regulatory dossiers within Vault RIM Submissions — creating submission records, managing content plans, coordinating document authoring and review workflows, and assembling final eCTD sequences for publishing. Maintaining dossier integrity across multiple concurrent compounds and markets.</p>
+          <h3>eCTD publishing coordination</h3>
+          <p>Coordinating the handoff from Vault RIM content management to the eCTD publishing function — ensuring all Module 1–5 documents are authored, reviewed, approved, and correctly classified before publishing. Liaising with publishing teams to resolve structure and granularity issues and meet regulatory authority technical specifications.</p>
+          <h3>Submission planning &amp; tracking</h3>
+          <p>Managing submission timelines and milestone tracking within Vault RIM — maintaining submission plans that align content readiness with regulatory filing deadlines, tracking open action items across cross-functional authoring teams, and escalating risks to submission timelines.</p>
+          <h3>Registration management</h3>
+          <p>Maintaining regulatory registration records within Vault RIM Registrations — tracking approval status, conditions of approval, label versions, and renewal timelines across global markets. Ensuring registration data is current and audit-ready for regulatory inspection.</p>
+          <h2>Technical knowledge</h2>
+          <ul>
+            <li><strong>ICH M4:</strong> CTD structure and content requirements across all five modules</li>
+            <li><strong>eCTD specification:</strong> FDA and EMA technical validation requirements</li>
+            <li><strong>Veeva Vault RIM modules:</strong> Submissions, Registrations, Publishing, Intelligence</li>
+            <li><strong>GxP compliance:</strong> Audit trail maintenance and electronic record validation</li>
+          </ul>
+          <hr/>
+          <p><em>Need Vault RIM or eCTD submission expertise? <a href="index.html#contact">Get in touch</a>.</em></p>
+        `
+      }
+    ];
 
+    // ─── ALPINE COMPONENT ────────────────────────────────────────────────────────
+    function caseStudy() {
+      return {
+        dark: false,
+        scrolled: false,
+        mobileMenu: false,
+        progress: 0,
+        loading: true,
+        project: null,
+        relatedProjects: [],
+
+        init() {
+          this.dark = localStorage.getItem('theme') === 'dark'
+            || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+          this.$watch('dark', v => localStorage.setItem('theme', v ? 'dark' : 'light'));
+
+          window.addEventListener('scroll', () => {
+            this.scrolled = window.scrollY > 20;
+            const h = document.body.scrollHeight - window.innerHeight;
+            this.progress = h > 0 ? Math.min(100, Math.round((window.scrollY / h) * 100)) : 0;
+          }, { passive: true });
+
+          // Parse ?id= from URL
+          const params = new URLSearchParams(window.location.search);
+          const id = parseInt(params.get('id'), 10);
+
+          // IDs 8, 9, 10 are PDFs — redirect if someone lands here by mistake
+          const pdfMap = {
+            8: 'assets/Docs/Formulation_and_invitro_evaluation_of_oral_extende.pdf',
+            9: 'assets/Docs/Osmotic_drug_delivery_system_of_valsartan.pdf',
+            10: 'assets/Docs/To_evaluate_safety_and_efficacy_of_tediz.pdf'
+          };
+          if (pdfMap[id]) {
+            window.location.replace(pdfMap[id]);
+            return;
+          }
+
+          this.project = ALL_PROJECTS.find(p => p.id === id) || null;
+          this.loading = false;
+
+          if (this.project) {
+            // Set page title + meta description dynamically
+            document.title = this.project.metaTitle + ' · Omer Wasiq';
+
+            // Related: up to 3 other projects in same or adjacent category (excluding current)
+            const pool = ALL_PROJECTS.filter(p => p.id !== id && !pdfMap[p.id]);
+            const same = pool.filter(p => p.category === this.project.category);
+            const rest = pool.filter(p => p.category !== this.project.category);
+            this.relatedProjects = [...same, ...rest].slice(0, 3);
+
+            this.$nextTick(() => {
+              const obs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                  if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+                });
+              }, { threshold: .08, rootMargin: '0px 0px -30px 0px' });
+              document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+            });
+          }
+        }
+      }
+    }
+  </script>
 </body>
 </html>

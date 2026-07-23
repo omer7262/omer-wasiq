@@ -11,6 +11,10 @@
     <img src="https://img.shields.io/badge/🌐_Portfolio-omerwasiq.com-0a66c2?style=for-the-badge&logoColor=white" alt="Portfolio Website"/>
   </a>
   &nbsp;
+  <a href="https://www.linkedin.com/in/omer-wasiq-2a93521a1/" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn Profile"/>
+  </a>
+  &nbsp;
   <img src="https://img.shields.io/badge/Status-Available%20for%20Work-brightgreen?style=for-the-badge" alt="Available for Work"/>
   &nbsp;
   <img src="https://img.shields.io/badge/Experience-8%2B%20Years-blueviolet?style=for-the-badge" alt="8+ Years Experience"/>
@@ -164,13 +168,19 @@ Over my freelance career, I have supported regulatory operations for clients exe
 
 ## 🎓 Academic Background
 
-### Master's Thesis Research
+### Master's Thesis Research & Publications
 
-Omer holds an advanced academic background in pharmaceutical sciences, underpinning his regulatory expertise with rigorous scientific knowledge. His postgraduate research work includes:
+Omer holds an advanced academic background in pharmaceutical sciences, underpinning his regulatory expertise with rigorous scientific knowledge. His postgraduate research and published work includes:
 
 - **Extended Release Drug Formulation** — _Formulation and In-Vitro Evaluation of Oral Extended-Release Dosage Forms_
 - **Osmotic Drug Delivery Systems** — _Osmotic Drug Delivery System of Valsartan_ (published research)
 - **Clinical Research** — _Evaluation of Safety and Efficacy of Tedizolid_ (clinical study participation)
+- **Respiratory Tract Infections** — _A study on prescribing trends in respiratory tract infections in a tertiary care hospital_ (published research)
+
+### Professional Certifications & Training
+
+- Completed over 15 targeted certifications in Regulatory Affairs, Document Automation, and Medical Review processes.
+- Certifications acquired from globally recognized institutions including **TOPRA, Summit, Fuse, Alison, and Active Pharma Lab**.
 
 This scientific foundation allows Omer to engage meaningfully with complex pharmaceutical content — a critical asset in regulatory operations where understanding the medical and scientific context of promotional materials is essential.
 
@@ -196,6 +206,10 @@ This scientific foundation allows Omer to engage meaningfully with complex pharm
 <p align="center">
   <a href="https://omerwasiq.com" target="_blank">
     <img src="https://img.shields.io/badge/🌐%20Visit%20My%20Portfolio-omerwasiq.com-0a66c2?style=for-the-badge" alt="Portfolio"/>
+  </a>
+  &nbsp;
+  <a href="https://www.linkedin.com/in/omer-wasiq-2a93521a1/" target="_blank">
+    <img src="https://img.shields.io/badge/Connect_on-LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
   </a>
 </p>
 
@@ -233,6 +247,7 @@ Feel free to reach out for:
 <p align="center">
   <sub>
     🔗 Portfolio: <a href="https://omerwasiq.com">omerwasiq.com</a> &nbsp;|&nbsp;
+    💼 <a href="https://www.linkedin.com/in/omer-wasiq-2a93521a1/" target="_blank">LinkedIn</a> &nbsp;|&nbsp;
     📍 Based in the UK &nbsp;|&nbsp;
     🌍 Serving UK & USA healthcare agencies
   </sub>
